@@ -1,0 +1,29 @@
+version: '3.1'
+
+volumes:
+  prometheus_data: {}
+
+services:
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - .:/etc/prometheus/
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    ports:
+      - 9090:9090
+    extra_hosts:
+      - "hyperflow:${HYPERFLOW_HOST}"
+      - "prometheus_pushgateway:${PROMETHEUS_GATEWAY_HOST}"
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    volumes:
+      - ./provisioning/:/etc/grafana/provisioning/
+    environment:
+      GF_USERS_DEFAULT_THEME: light
+
